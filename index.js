@@ -27,7 +27,6 @@ const noPermissionMessage = "You do not have permission to do that!";
 
 // Commands
 client.on('message', async message => {
-    // If the message is "how to embed"
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
     if (command === "help") {
@@ -51,8 +50,6 @@ client.on('message', async message => {
         message.channel.send('https://wiki.darrionatplugins.com');
     }
     if (command === "ping") {
-        // Calculates ping between sending a message and editing it, giving a nice round-trip latency.
-        // The second ping is an average latency between the bot and the websocket server (one-way, not round-trip)
         const m = await message.channel.send("Ping?");
         m.edit(`:ping_pong: Pong! Latency is ${m.createdTimestamp - message.createdTimestamp}ms.`);
     }
