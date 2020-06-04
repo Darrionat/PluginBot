@@ -1,64 +1,77 @@
 const Discord = require("discord.js");
+const Enmap = require("enmap");
+const fs = require("fs");
+const {Spiget} = require("spiget");
+const spiget = new Spiget("Darrion's Plugin Bot");
+
+/**
+ * Set up ALL THE THINGS
+ */
+const client = {
+    bot: new Discord.Client,
+    commands: new Enmap(),
+    aliases: new Enmap(),
+    cooldowns: new Enmap(),
+    config: require("./config.json"),
+    logger: require("./util/logger.js")
+};
+
 const { prefix, token } = require("./config.json");
-// const BOT_ID = "603751943982153740";
-const client = new Discord.Client();
-const MessageEmbed = Discord.MessageEmbed;
 
-client.once("ready", () => {
-    console.log("Ready!");
-    client.user.setActivity(`with code ${prefix}help`);
-});
+client.logger.log("Starting up...");
 
+/**
+ * Load all ".js" files in ./events and listen for emits
+ */
+const eventFiles = fs.readdirSync("./events").filter(file => file.endsWith(".js"));
 
-// Ping Listener
-const DARRION_ID = "163454178365145088";
-client.on('message', message => {
-    if (message.member.hasPermission(["ADMINISTRATOR"])) return;
-    if (message.author.bot) return;
-    if (message.mentions.users.has(DARRION_ID)) {
-        message.delete()
-            .then(msg => console.log(`Deleted message from ${msg.author.username}`))
-            .catch(console.error);
-        message.channel.send(`<@${message.author.id}> Please do not ping Darrionat.`);
-    }
-});
+for (const eventFile of eventFiles) {
+    const event = require(`./events/${eventFile}`);
 
-const noPermissionMessage = "You do not have permission to do that!";
+    client.bot.on(event.name, (...args) => event.execute(client, ...args));
+}
 
-// Commands
-client.on('message', async message => {
-    const args = message.content.slice(prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-    if (command === "help") {
-        const embed = new MessageEmbed()
-            .setTitle('Commands')
-            .setColor(0xff0000)
-            .setDescription(`
-            ${prefix}wiki - Links the wiki \n
-            ${prefix}ping - Tests latency`);
-        message.channel.send(embed);
-        if (message.member.hasPermission("ADMINISTRATOR")) {
-            const embed = new MessageEmbed()
-                .setTitle('Admin Commands')
-                .setColor(0xff0000)
-                .setDescription(`
-            ${prefix}update - Put out a plugin update announcement`);
-            message.channel.send(embed);
+client.logger.log(`Loaded ${eventFiles.length} events`);
+
+/**
+ * Load all ".js" files in ./commands and add to client.commands Enmap
+ * Also check the file for assigned aliases and add to client.aliases Enmap
+ */
+const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
+
+for (const commandFile of commandFiles) {
+    const command = require(`./commands/${commandFile}`);
+    client.commands.set(command.name, command);
+
+    if (command.aliases && command.aliases.length > 0) {
+        for (const alias of command.aliases) {
+            client.aliases.set(alias, command.name);
         }
     }
-    if (command === "wiki") {
-        message.channel.send('https://wiki.darrionatplugins.com');
-    }
-    if (command === "ping") {
-        const m = await message.channel.send("Ping?");
-        m.edit(`:ping_pong: Pong! Latency is ${m.createdTimestamp - message.createdTimestamp}ms.`);
-    }
-    if (command === "update") {
-        if (!message.member.hasPermission("ADMINISTRATOR")){
-           return message.channel.send(noPermissionMessage);
-        }
-        message.channel.send("");
-    }
-});
+}
 
-client.login(token);
+
+
+/*
+    Checks for updates every 15 minutes
+    3600s = 1h
+    900s = 15m
+    15m = 900 * 1000 ms;
+*/
+
+setInterval(checkUpdates, 900 * 1000);
+let resourceIDs = ["72678", "69279"];
+
+function checkUpdates() {
+    // Open a new connection, using the GET request on the URL endpoint
+    for (let id of resourceIDs){
+        spiget.getResource(id).then(resource => {
+            console.log(resource.name);
+        });
+    }
+}
+
+client.logger.log(`Registered ${commandFiles.length} commands`);
+
+client.logger.log("Logging in...");
+client.bot.login(client.config.token);
