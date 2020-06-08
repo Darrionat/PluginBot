@@ -1,6 +1,6 @@
 {
   "name": "pluginbot",
-  "version": "1.0.0",
+  "version": "v1.1",
   "description": "A Discord Bot created by and for Darrionat",
   "main": "index.js",
   "scripts": {

@@ -1,9 +1,13 @@
 const Discord = require("discord.js");
+const { MessageEmbed } = require("discord.js");
+
 const Enmap = require("enmap");
 const fs = require("fs");
-const {Spiget} = require("spiget");
+const { Spiget } = require("spiget");
 const spiget = new Spiget("Darrion's Plugin Bot");
 
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+var request = new XMLHttpRequest();
 /**
  * Set up ALL THE THINGS
  */
@@ -13,7 +17,8 @@ const client = {
     aliases: new Enmap(),
     cooldowns: new Enmap(),
     config: require("./config.json"),
-    logger: require("./util/logger.js")
+    logger: require("./util/logger.js"),
+    package: require("./package.json")
 };
 
 const { prefix, token } = require("./config.json");
@@ -53,22 +58,76 @@ for (const commandFile of commandFiles) {
 
 
 /*
-    Checks for updates every 15 minutes
+    Checks for updates every 1 minute
     3600s = 1h
     900s = 15m
     15m = 900 * 1000 ms;
+    1m = 60 * 1000 ms;
 */
+setInterval(checkUpdates,  60 * 1000);
 
-setInterval(checkUpdates, 900 * 1000);
-let resourceIDs = ["72678", "69279"];
 
-function checkUpdates() {
-    // Open a new connection, using the GET request on the URL endpoint
-    for (let id of resourceIDs){
-        spiget.getResource(id).then(resource => {
-            console.log(resource.name);
-        });
+async function checkUpdates() {
+    const serverFiles = fs.readdirSync("./serverdata").filter(file => file.endsWith(".json"));
+
+    for (serverFile of serverFiles) {
+        var filePath = `./serverdata/${serverFile}`;
+        var jsonExistingData = JSON.parse(getJSONFileData(filePath));
+
+        for (const watchedResource of jsonExistingData.watchedResources) {
+            const updateEmbed = new MessageEmbed();
+            const id = watchedResource.resourceID;
+            const channel = client.bot.channels.cache.get(watchedResource.channelID);
+            console.log(id);
+            try {
+                var resource = await spiget.getResource(id);
+            } catch{
+                console.log(`${id} is not a valid resource id for updater!`)
+                return;
+            }
+            const author = (await resource.getAuthor()).name;
+            let image = resource.icon.fullUrl();
+            image = image.replace("orgdata", "org/data");
+
+            let sent = false;
+            request.onreadystatechange = function () {
+                if (sent) return;
+                const latestVersion = request.responseText;               
+                if (watchedResource.lastCheckedVersion == latestVersion) {
+                    // Up to date
+                    return;
+                }
+                if (latestVersion == "") {
+                    return;
+                }
+                // Not up to date. Post to channel
+                updateEmbed
+                    .setAuthor(`Author: ${author}`, `${image}`)
+                    .setColor(channel.guild.me.displayHexColor)
+                    .setTitle(`An update for ${resource.name} is available`)
+                    .setDescription(`${resource.tag}`)
+                    .addFields(
+                        { name: 'Version', value: `${latestVersion}`, inline: false },
+                        { name: 'Download', value: `https://spigotmc.org/resources/.${id}/`, inline: false }
+                    )
+                sent = true;
+                watchedResource.lastCheckedVersion = latestVersion;
+                fs.writeFile(filePath, JSON.stringify(jsonExistingData), err => {
+                    if (err) throw err;
+                });
+                client.bot.channels.cache.get(watchedResource.channelID).send({ embed: updateEmbed });
+            };
+            request.open("GET", `https://api.spigotmc.org/legacy/update.php?resource=${id}`, true);
+            request.send();
+            continue;
+        }
     }
+}
+function getJSONFileData(filePath) {
+    return fs.readFileSync(filePath, (err, data) => {
+        if (err) return;
+        return JSON.parse(data);
+    });
 }
 
 client.logger.log(`Registered ${commandFiles.length} commands`);

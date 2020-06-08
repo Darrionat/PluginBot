@@ -40,9 +40,9 @@ module.exports = {
          */
         if (command.args_required > 0 && args.length < command.args_required) {
             if (!command.args_usage)
-                return message.reply("You didn't provide enough arguements for that command!");
+                return message.reply("You didn't provide enough arguments for that command!");
             else  
-                return message.reply(`You didn't provide enough arguements for that command! Correct Usage: \`${client.config.prefix}${command.name} ${command.args_usage}\``);
+                return message.reply(`You didn't provide enough arguments for that command! Correct Usage: \`${client.config.prefix}${command.name} ${command.args_usage}\``);
         }
 
         /**
