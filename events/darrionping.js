@@ -7,9 +7,6 @@ module.exports = {
         if (message.author.bot) return;
         if (message.member.hasPermission(["ADMINISTRATOR"])) return;
         if (message.mentions.users.has(DARRION_ID)) {
-            message.delete()
-                .then(msg => console.log(`Deleted message from ${msg.author.username} for pinging Darrionat`))
-                .catch(console.error);
             message.channel.send(`<@${message.author.id}> Please do not ping Darrionat.`);
         }
     }

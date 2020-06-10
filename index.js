@@ -64,26 +64,26 @@ for (const commandFile of commandFiles) {
     15m = 900 * 1000 ms;
     1m = 60 * 1000 ms;
 */
-setInterval(checkUpdates,  60 * 1000);
+setInterval(checkUpdates, 60 * 1000);
 
 
 async function checkUpdates() {
     const serverFiles = fs.readdirSync("./serverdata").filter(file => file.endsWith(".json"));
 
-    for (serverFile of serverFiles) {
-        var filePath = `./serverdata/${serverFile}`;
-        var jsonExistingData = JSON.parse(getJSONFileData(filePath));
+    for (const serverFile of serverFiles) {
+        const filePath = `./serverdata/${serverFile}`;
+        let jsonExistingData = JSON.parse(getJSONFileData(filePath));
 
-        for (const watchedResource of jsonExistingData.watchedResources) {
+        for (let watchedResource of jsonExistingData.watchedResources) {
             const updateEmbed = new MessageEmbed();
             const id = watchedResource.resourceID;
             const channel = client.bot.channels.cache.get(watchedResource.channelID);
-            console.log(id);
-            try {
-                var resource = await spiget.getResource(id);
-            } catch{
-                console.log(`${id} is not a valid resource id for updater!`)
+
+            const resource = await spiget.getResource(id).catch((error) => {
                 return;
+            });
+            if (resource == undefined) {
+
             }
             const author = (await resource.getAuthor()).name;
             let image = resource.icon.fullUrl();
@@ -92,7 +92,10 @@ async function checkUpdates() {
             let sent = false;
             request.onreadystatechange = function () {
                 if (sent) return;
-                const latestVersion = request.responseText;               
+                const latestVersion = request.responseText;
+                if (latestVersion.length > 16) {
+                    return;
+                }
                 if (watchedResource.lastCheckedVersion == latestVersion) {
                     // Up to date
                     return;
@@ -111,6 +114,8 @@ async function checkUpdates() {
                         { name: 'Download', value: `https://spigotmc.org/resources/.${id}/`, inline: false }
                     )
                 sent = true;
+                console.log(latestVersion)
+                console.log(watchedResource.lastCheckedVersion);
                 watchedResource.lastCheckedVersion = latestVersion;
                 fs.writeFile(filePath, JSON.stringify(jsonExistingData), err => {
                     if (err) throw err;
@@ -123,6 +128,7 @@ async function checkUpdates() {
         }
     }
 }
+
 function getJSONFileData(filePath) {
     return fs.readFileSync(filePath, (err, data) => {
         if (err) return;

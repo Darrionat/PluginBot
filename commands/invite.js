@@ -1,7 +1,7 @@
 const { MessageEmbed } = require("discord.js");
 module.exports = { 
-    name: "wiki",
-    description: "The Wiki link!", 
+    name: "invite",
+    description: "The bot invite link!", 
     aliases: [], 
     guild: ["all"], 
     nsfw: false,
@@ -14,10 +14,10 @@ module.exports = {
     async execute(client, message, args) {
         const helpEmbed = new MessageEmbed();
         helpEmbed
-            .setURL('https://wiki.darrionatplugins.com')
+            .setURL('https://discord.com/oauth2/authorize?client_id=603751943982153740&scope=bot&permissions=8')
             .setColor(message.guild.me.displayHexColor)
-            .setTitle(`Darrionat's Plugins Wiki`)
-            .setDescription(`Click on this link to learn all about Darrionat's plugins (bot wiki coming soon!)`)
+            .setTitle(`Bot Invite Link`)
+            .setDescription(`Click on this link to add this bot to your Discord server!`)
         message.channel.send({ embed: helpEmbed });
     }
 };
