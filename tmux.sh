@@ -1,15 +1,4 @@
-#!/bin/sh
-### BEGIN INIT INFO
-# Provides:          Minecraft-Server
-# Required-Start:    $all
-# Required-Stop:     $remote_fs $syslog $network
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Starts minecraft server at boot time
-# Description:       Starts minecraft server at boot time
-### END INIT INFO
-
-#dir which contains the server directory
+#dir which contains the bot directory
 basedir=$PWD
 
 #tmux session name (`basename \"$basedir\"` -> basedir's name)
