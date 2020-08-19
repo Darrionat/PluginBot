@@ -59,9 +59,6 @@ for (const commandFile of commandFiles) {
 
 /*
     Checks for updates every 1 minute
-    3600s = 1h
-    900s = 15m
-    15m = 900 * 1000 ms;
     1m = 60 * 1000 ms;
 */
 setInterval(checkUpdates, 60 * 1000);
@@ -83,7 +80,7 @@ async function checkUpdates() {
                 return;
             });
             if (resource == undefined) {
-
+                
             }
             const author = (await resource.getAuthor()).name;
             let image = resource.icon.fullUrl();
