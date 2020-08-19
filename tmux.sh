@@ -1,4 +1,15 @@
-#dir which contains the bot directory
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          Minecraft-Server
+# Required-Start:    $all
+# Required-Stop:     $remote_fs $syslog $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts minecraft server at boot time
+# Description:       Starts minecraft server at boot time
+### END INIT INFO
+
+#dir which contains the server directory
 basedir=$PWD
 
 #tmux session name (`basename \"$basedir\"` -> basedir's name)
@@ -14,11 +25,12 @@ start() {
     
     echo "Starting bot"
 
-    git pull #To stay up to date
+    git fetch --all
+    git reset --hard origin/master
 
     tmux send-keys -t $session:0 "forever start index.js" C-m
     
-    echo "Bot started. Attaching session..."
+    echo "Server started. Attaching session..."
     
     sleep 0.5
     
