@@ -13,15 +13,30 @@ module.exports = {
     user_permissions: [],
     bot_permissions: [],
     args_required: 1,
-    args_usage: `[resourceName] Example: p!searchResource Vault`,
+    args_usage: `[resourceName] Example: p!searchResource Vault\nPro-Tip: Use -n [size] to adjust search size. Default = 100\nExample: p!search a 5000`,
     cooldown: 3,
 
     async execute(client, message, args) {
-        let search = concatenateArguments(args);
 
-        // With XML Request
-        // size=30&fields=name
-        var apiURL = `https://api.spiget.org/v2/search/resources/${search}?size=105`;
+        // Checking for the size flag
+        // Adjusts search size
+        var size = 100;
+        var sizeArgIndex = 0;
+        var usingSizeFlag = false;
+        for (var arg of args) {
+            sizeArgIndex++;
+            if (arg !== "-n") continue;
+            size = args[sizeArgIndex];
+            usingSizeFlag = true;
+            break;
+        }
+        // Remove size flag from the search query
+        if (usingSizeFlag){
+           args.splice(sizeArgIndex -1, 2);
+        }
+        // Combine the arguments into a search string and request
+        let search = concatenateArguments(args);
+        var apiURL = `https://api.spiget.org/v2/search/resources/${search}?size=${size}`;
 
         var sent = false;
         request.onreadystatechange = function () {
@@ -33,10 +48,7 @@ module.exports = {
                 return;
             }
 
-
-
-
-            // TODO Sort by downloads from a search list of top 25
+            // Sort by downloads from a search list of 100 results
             var map = new Map();
             for (var resource of results) {
                 let downloads = resource.downloads;
@@ -78,15 +90,13 @@ module.exports = {
             list = '';
             sent = true;
             return message.channel.send({ embed: resultEmbed });
-
-
-
         }
         request.open("GET", apiURL, true);
         request.send();
     }
 };
 
+// Combine an array into a string. Spaces between arguments
 function concatenateArguments(args) {
     var search = "";
     var index = 0;
@@ -102,6 +112,7 @@ function concatenateArguments(args) {
     return search;
 }
 
+// Sorts a [key, value] map by values in descending order
 function sortMapByValue(map) {
     const mapSort = new Map([...map.entries()].sort((a, b) => b[1] - a[1]));
     return [...mapSort];
