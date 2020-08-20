@@ -11,7 +11,7 @@ module.exports = {
     bot_permissions: [],
     args_required: 0,
     args_usage: "[commandName]",
-    cooldown: 5,
+    cooldown: 0,
 
     async execute(client, message, args) {
         const helpEmbed = new MessageEmbed();

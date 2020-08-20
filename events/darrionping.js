@@ -7,7 +7,7 @@ module.exports = {
         if (message.author.bot) return;
         if (message.member.hasPermission(["ADMINISTRATOR"])) return;
         if (message.mentions.users.has(DARRION_ID)) {
-            message.channel.send(`<@${message.author.id}> Please do not ping Darrionat.`);
+            message.channel.send(`<@${message.author.id}> Please do not ping Darrion.`);
         }
     }
 };

@@ -1,7 +1,7 @@
 {
   "name": "pluginbot",
-  "version": "v1.2.1",
-  "description": "A Discord Bot created by and for Darrionat",
+  "version": "v1.3",
+  "description": "A bot that is able to give detailed information about plugins",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

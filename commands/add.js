@@ -18,7 +18,6 @@ module.exports = {
     args_usage: `[resource_id] [channel] Example: p!add 72678 #announcements`,
     cooldown: 5,
 
-    // add 12345 channel
     async execute(client, message, args) {
         var resource = undefined;
         try {
