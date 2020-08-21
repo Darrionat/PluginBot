@@ -13,7 +13,7 @@ module.exports = {
     user_permissions: [],
     bot_permissions: [],
     args_required: 1,
-    args_usage: `[resourceName] Example: p!searchResource Vault\nPro-Tip: Use -n [size] to adjust search size. Default = 100\nExample: p!search a 5000`,
+    args_usage: `[resourceName] Example: p!searchResource Vault\nPro-Tip: Use -n [size] to adjust search size. Default = 100\nExample: p!search a -n 5000`,
     cooldown: 3,
 
     async execute(client, message, args) {

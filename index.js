@@ -65,7 +65,13 @@ setInterval(checkUpdates, 60 * 1000);
 
 
 async function checkUpdates() {
-    const serverFiles = fs.readdirSync("./serverdata").filter(file => file.endsWith(".json"));
+    try {
+        var serverDataDir = fs.readdirSync("./serverdata");
+    } catch (error) {
+        client.logger.log("No ./serverdata directory", "wrn");
+        return;
+    }
+    const serverFiles = serverDataDir.filter(file => file.endsWith(".json"));
 
     for (const serverFile of serverFiles) {
         const filePath = `./serverdata/${serverFile}`;

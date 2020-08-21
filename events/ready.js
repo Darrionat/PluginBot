@@ -8,12 +8,14 @@ module.exports = {
         client.bot.user.setStatus("available");
 
         const updatePresence = () => {
-            
-            client.bot.user.setActivity(`with SpigotMC | ${client.config.prefix}help`, { type: "PLAYING" }).catch(() => { 
-           client.logger.error("Failed to set bot activity!");
+            var time = new Date().toString();
+            console.log(time);
+            client.bot.user.setActivity(`with SpigotMC | ${client.config.prefix}help`, { type: "PLAYING" }).catch(() => {
+                client.logger.error("Failed to set bot activity!");
             });
-            setInterval(updatePresence, 10 * 60 * 1000);
+            
         };
+        setInterval(updatePresence, 10 * 60 * 1000);
         updatePresence();
     }
 };
