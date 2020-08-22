@@ -86,7 +86,7 @@ async function checkUpdates() {
                 return;
             });
             if (resource == undefined) {
-                
+                return;
             }
             const author = (await resource.getAuthor()).name;
             let image = resource.icon.fullUrl();
