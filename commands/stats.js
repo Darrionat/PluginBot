@@ -1,4 +1,5 @@
 const { MessageEmbed } = require("discord.js");
+const darrrionID = '163454178365145088';
 module.exports = {
     name: "stats",
     description: "Multiple statistics of the bot!",
@@ -12,9 +13,12 @@ module.exports = {
     cooldown: 5,
 
     async execute(client, message, args) {
+        let darrionUser = await client.bot.users.fetch(darrrionID);
+        var darrionAvatar = darrionUser.displayAvatarURL();
+
         const helpEmbed = new MessageEmbed();
         helpEmbed
-            .setAuthor("Author: Darrion#0001", "https://imgur.com/Fg8cB6r.png", "https://wiki.darrionatplugins.com")
+            .setAuthor("Author: Darrion#0001", darrionAvatar, "https://wiki.darrionatplugins.com")
             .setColor(message.guild.me.displayHexColor)
             .setTitle(`${message.guild.me.displayName} Statistics`)
             .addFields(
