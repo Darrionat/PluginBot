@@ -1,6 +1,6 @@
 {
   "name": "pluginbot",
-  "version": "v1.4",
+  "version": "v1.4.1",
   "description": "A bot that is able to give detailed information about plugins",
   "main": "index.js",
   "scripts": {
