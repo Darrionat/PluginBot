@@ -38,8 +38,8 @@ function getUptime(client) {
     var milliseconds = client.uptime;
     let totalSeconds = (milliseconds / 1000);
     let days = Math.floor(totalSeconds / 86400);
-    let hours = Math.floor(totalSeconds % 86400) / 3600;
-    let minutes = Math.floor(totalSeconds % 3600) / 60;
+    let hours = Math.floor(totalSeconds % 86400 / 3600);
+    let minutes = Math.floor(totalSeconds % 3600 / 60);
     let seconds = Math.floor(totalSeconds % 60);
 
     var uptime = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
