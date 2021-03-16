@@ -59,7 +59,7 @@ for (const commandFile of commandFiles) {
     Checks for updates every 1 minute
     1m = 60 * 1000 ms;
 */
-setInterval(checkUpdates, 5 * 1000);
+setInterval(checkUpdates, 60 * 1000);
 
 
 async function checkUpdates() {
