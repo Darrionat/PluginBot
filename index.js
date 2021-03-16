@@ -7,7 +7,8 @@ const { Spiget } = require("spiget");
 const spiget = new Spiget("Darrion's Plugin Bot");
 
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-var request = new XMLHttpRequest();
+var idRequest = new XMLHttpRequest();
+var updateRequest = new XMLHttpRequest();
 /**
  * Set up ALL THE THINGS
  */
@@ -54,14 +55,11 @@ for (const commandFile of commandFiles) {
         }
     }
 }
-
-
-
 /*
     Checks for updates every 1 minute
     1m = 60 * 1000 ms;
 */
-setInterval(checkUpdates, 60 * 1000);
+setInterval(checkUpdates, 5 * 1000);
 
 
 async function checkUpdates() {
@@ -92,41 +90,46 @@ async function checkUpdates() {
             let image = resource.icon.fullUrl();
             image = image.replace("orgdata", "org/data");
 
-            let sent = false;
-            request.onreadystatechange = function () {
-                if (sent) return;
-                const latestVersion = request.responseText;
-                if (latestVersion.length > 16) {
-                    return;
-                }
+            idRequest.onreadystatechange = function () {
+                const latestVersionData = idRequest.responseText;
+                var dataJSON = JSON.parse(latestVersionData);
+                var latestVersion = dataJSON.name;
+
+                // Up to date
                 if (watchedResource.lastCheckedVersion == latestVersion) {
-                    // Up to date
                     return;
                 }
-                if (latestVersion == "") {
-                    return;
-                }
+
                 // Not up to date. Post to channel
-                updateEmbed
-                    .setAuthor(`Author: ${author}`, `${image}`)
-                    .setColor(channel.guild.me.displayHexColor)
-                    .setTitle(`An update for ${resource.name} is available`)
-                    .setDescription(`${resource.tag}`)
-                    .addFields(
-                        { name: 'Version', value: `${latestVersion}`, inline: false },
-                        { name: 'Download', value: `https://spigotmc.org/resources/.${id}/`, inline: false }
-                    )
-                sent = true;
-                console.log(latestVersion)
-                console.log(watchedResource.lastCheckedVersion);
-                watchedResource.lastCheckedVersion = latestVersion;
-                fs.writeFile(filePath, JSON.stringify(jsonExistingData), err => {
-                    if (err) throw err;
-                });
-                client.bot.channels.cache.get(watchedResource.channelID).send({ embed: updateEmbed });
+                updateRequest.onreadystatechange = function () {
+                    const latestUpdate = updateRequest.responseText;
+                    var data = JSON.parse(latestUpdate);
+
+                    var updateDesc = Buffer.from(data.description, 'base64').toString();
+                    updateDesc = formatText(updateDesc);
+
+                    // Send embed
+                    updateEmbed
+                        .setAuthor(`Author: ${author}`, `${image}`)
+                        .setColor(channel.guild.me.displayHexColor)
+                        .setTitle(`An update for ${resource.name} is available`)
+                        .setDescription(`${resource.tag}`)
+                        .addFields(
+                            { name: 'Version', value: `${latestVersion}`, inline: false },
+                            { name: 'Update Description', value: updateDesc, inline: false },
+                            { name: 'Download', value: `https://spigotmc.org/resources/.${id}/`, inline: false }
+                        )
+                    watchedResource.lastCheckedVersion = latestVersion;
+                    fs.writeFile(filePath, JSON.stringify(jsonExistingData), err => {
+                        if (err) throw err;
+                    });
+                    client.bot.channels.cache.get(watchedResource.channelID).send({ embed: updateEmbed });
+                };
+                updateRequest.open("GET", `https://api.spiget.org/v2/resources/${id}/updates/latest`, false);
+                updateRequest.send();
             };
-            request.open("GET", `https://api.spigotmc.org/legacy/update.php?resource=${id}`, true);
-            request.send();
+            idRequest.open("GET", `https://api.spiget.org/v2/resources/${id}/versions/latest`, false);
+            idRequest.send();
             continue;
         }
     }
@@ -137,6 +140,15 @@ function getJSONFileData(filePath) {
         if (err) return;
         return JSON.parse(data);
     });
+}
+
+function formatText(description) {
+    description = description.replace(/<b>/gi, '**'); description = description.replace(/<\/b>/gi, '**');
+    description = description.replace(/<i>/gi, '*'); description = description.replace(/<\/i>/gi, '**');
+    description = description.replace(/<ul>/gi, ""); description = description.replace(/<\/ul>/gi, "");
+    description = description.replace(/<li>/gi, ""); description = description.replace(/<\/li>/gi, "");
+    description = description.replace(/<br>/gi, '');
+    return description;
 }
 
 client.logger.log(`Registered ${commandFiles.length} commands`);

@@ -1,6 +1,6 @@
 {
   "name": "pluginbot",
-  "version": "v1.4.1.1",
+  "version": "v1.5",
   "description": "A bot that is able to give detailed information about plugins",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "es6-promise": "^4.2.8",
     "isomorphic-fetch": "^2.2.1",
     "moment": "^2.26.0",
-    "spiget": "0.0.2",
+    "spiget": "^0.1.0",
     "xmlhttprequest": "^1.8.0"
   }
 }

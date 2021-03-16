@@ -17,7 +17,7 @@ start() {
     git fetch --all
     git reset --hard origin/master
 
-    tmux send-keys -t $session:0 "forever start index.js" C-m
+    tmux send-keys -t $session:0 "node index.js" C-m
     
     echo "Server started. Attaching session..."
     
@@ -29,7 +29,6 @@ start() {
 stop() {
     echo "Stopping bot..."
     cd ~/pluginbot
-    forever stop index.js
     echo "Killing tmux session"
     tmux kill-session -t $session
     echo "Bot stopped"
