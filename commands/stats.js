@@ -16,6 +16,13 @@ module.exports = {
         let darrionUser = await client.bot.users.fetch(darrrionID);
         var darrionAvatar = darrionUser.displayAvatarURL();
 
+        // Get member count
+        var members = 0;
+        for (const key of client.bot.guilds.cache.keyArray()) {
+            const guild = client.bot.guilds.cache.get(key);
+            members += guild.memberCount;
+        }
+
         const helpEmbed = new MessageEmbed();
         helpEmbed
             .setAuthor("Author: Darrion#0001", darrionAvatar, "https://wiki.darrionatplugins.com")
@@ -23,7 +30,7 @@ module.exports = {
             .setTitle(`${message.guild.me.displayName} Statistics`)
             .addFields(
                 { name: 'Version', value: `${client.package.version}`, inline: true },
-                { name: 'Users', value: `${client.bot.users.cache.size}`, inline: true },
+                { name: 'Users', value: `${members}`, inline: true },
                 { name: 'Channels', value: `${client.bot.channels.cache.size}`, inline: true },
                 { name: 'Servers', value: `${client.bot.guilds.cache.size}`, inline: true },
                 { name: 'Commands', value: `${client.commands.size}`, inline: true },

@@ -3,7 +3,13 @@ module.exports = {
 
     async execute(client) {
         client.logger.log(`Logged in as ${client.bot.user.tag} on ${client.bot.guilds.cache.size} guilds`);
-        client.logger.log(`Serving ${client.bot.users.cache.size} users in ${client.bot.channels.cache.size} channels`);
+
+        var members = 0;
+        for (const key of client.bot.guilds.cache.keyArray()){
+            const guild = client.bot.guilds.cache.get(key);
+            members += guild.memberCount;
+        }
+        client.logger.log(`Serving ${members} users in ${client.bot.channels.cache.size} channels`);
 
         client.bot.user.setStatus("available");
 
