@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 const { Spiget } = require("spiget");
 const spiget = new Spiget("Darrion's Plugin Bot");
@@ -95,21 +95,21 @@ module.exports = {
                 fs.writeFile(filePath, JSON.stringify(saveJSON), err => {
                     if (err) throw err;
                 });
-                const resourceEmbed = new MessageEmbed();
+                const resourceEmbed = new EmbedBuilder();
                 var image = resource.icon.fullUrl();
                 image = image.replace("orgdata", "org/data");
                 resourceEmbed
-                    .setAuthor(`Author: ${author}`, `${image}`)
-                    .setColor(message.guild.me.displayHexColor)
+                    .setAuthor({text: `Author: ${author}`, iconURL: image})
+                    .setColor(message.guild.members.me.displayHexColor)
                     .setTitle(`Now watching: ${resource.name}`)
                     .setDescription(`${resource.tag}`)
-                    .addFields(
+                    .addFields([
                         { name: 'Channel', value: `${channel}`, inline: false },
                         { name: 'Version', value: `${latestVersion}`, inline: true },
                         { name: 'Download', value: `https://spigotmc.org/resources/.${args[0]}/`, inline: true }
-                    )
+		     ])
                 sent = true;
-                return message.channel.send({ embed: resourceEmbed });
+                return message.reply({embeds: [resourceEmbed]});
 
             });
 

@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 // Plugins by Darrion Discord ID 601497373075570737
 const guildID = "601497373075570737";
 const memberRoleID = "601576493335969792";

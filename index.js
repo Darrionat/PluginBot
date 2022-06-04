@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 const Enmap = require("enmap");
 const fs = require("fs");
@@ -11,7 +11,14 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
  * Set up ALL THE THINGS
  */
 const client = {
-    bot: new Discord.Client,
+    bot: new Discord.Client({
+      intents: [
+          Discord.IntentsBitField.Flags.Guilds,
+          Discord.IntentsBitField.Flags.GuildMessages,
+          Discord.IntentsBitField.Flags.MessageContent,
+        ],
+      partials: ["MESSAGE", "CHANNEL"]
+    }),
     commands: new Enmap(),
     aliases: new Enmap(),
     cooldowns: new Enmap(),
@@ -29,8 +36,7 @@ const eventFiles = fs.readdirSync("./events").filter(file => file.endsWith(".js"
 
 for (const eventFile of eventFiles) {
     const event = require(`./events/${eventFile}`);
-
-    client.bot.on(event.name, (...args) => event.execute(client, ...args));
+    client.bot.on(event.name, (...args) => event.execute(client, ...args).catch(console.error));
 }
 
 client.logger.log(`Loaded ${eventFiles.length} events`);
@@ -72,7 +78,7 @@ async function checkUpdates() {
         let jsonExistingData = JSON.parse(getJSONFileData(filePath));
 
         for (let watchedResource of jsonExistingData.watchedResources) {
-            const updateEmbed = new MessageEmbed();
+            const updateEmbed = new EmbedBuilder();
             const id = watchedResource.resourceID;
             const channel = client.bot.channels.cache.get(watchedResource.channelID);
 
@@ -98,15 +104,15 @@ async function checkUpdates() {
                 updateDesc = `Description greater than 1024 characters`;
             // Send embed
             updateEmbed
-                .setAuthor(`Author: ${author}`, `${image}`)
-                .setColor(channel.guild.me.displayHexColor)
+                .setAuthor({name: `Author: ${author}`, iconURL: image})
+                .setColor(channel.guild.members.me.displayHexColor)
                 .setTitle(`An update for ${resource.name} is available`)
                 .setDescription(`${resource.tag}`)
-                .addFields(
+                .addFields([
                     { name: 'Version', value: `${latestVersion}`, inline: false },
                     { name: 'Update Description', value: updateDesc, inline: false },
                     { name: 'Download', value: `https://spigotmc.org/resources/.${id}/`, inline: false }
-                )
+                ]);
             watchedResource.lastCheckedVersion = latestVersion;
             fs.writeFile(filePath, JSON.stringify(jsonExistingData), err => {
                 if (err) throw err;

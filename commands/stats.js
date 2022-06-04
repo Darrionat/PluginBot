@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const darrrionID = '163454178365145088';
 module.exports = {
     name: "stats",
@@ -18,26 +18,29 @@ module.exports = {
 
         // Get member count
         var members = 0;
-        for (const key of client.bot.guilds.cache.keyArray()) {
-            const guild = client.bot.guilds.cache.get(key);
+        client.bot.guilds.cache.forEach(guild => {
             members += guild.memberCount;
-        }
+        });
 
-        const helpEmbed = new MessageEmbed();
+        const helpEmbed = new EmbedBuilder();
         helpEmbed
-            .setAuthor("Author: Darrion#0001", darrionAvatar, "https://wiki.darrionatplugins.com")
-            .setColor(message.guild.me.displayHexColor)
-            .setTitle(`${message.guild.me.displayName} Statistics`)
-            .addFields(
+            .setAuthor({
+              name: "Author: Darrion#0001",
+              iconURL: darrionAvatar,
+              url: "https://wiki.darrionatplugins.com"
+            })
+            .setColor(message.guild.members.me.displayHexColor)
+            .setTitle(`${message.guild.members.me.displayName} Statistics`)
+            .addFields([
                 { name: 'Version', value: `${client.package.version}`, inline: true },
                 { name: 'Users', value: `${members}`, inline: true },
                 { name: 'Channels', value: `${client.bot.channels.cache.size}`, inline: true },
                 { name: 'Servers', value: `${client.bot.guilds.cache.size}`, inline: true },
                 { name: 'Commands', value: `${client.commands.size}`, inline: true },
                 { name: 'Uptime', value: getUptime(client.bot), inline: true },
-            )
-            .setFooter(`Date Created: June 2, 2020`);
-        message.channel.send({ embed: helpEmbed });
+            ])
+            .setFooter({text: `Date Created: June 2, 2020`});
+        message.reply({embeds: [helpEmbed]});
     }
 };
 
