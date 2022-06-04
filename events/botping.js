@@ -1,5 +1,5 @@
 module.exports = {
-    name: "message",
+    name: "messageCreate",
 
     async execute(client, message) {
         let BOT_ID = client.bot.user.id;

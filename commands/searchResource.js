@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const { Spiget } = require("spiget");
 const spiget = new Spiget("Darrion's Plugin Bot");
 
@@ -78,18 +78,18 @@ module.exports = {
             }
 
             // Send embed
-            var resultEmbed = new MessageEmbed();
+            var resultEmbed = new EmbedBuilder();
             if (list == undefined || list == '')
                 list = `**No Results Found**`;
 
             resultEmbed
-                .setColor(message.guild.me.displayHexColor)
+                .setColor(message.guild.members.me.displayHexColor)
                 .setTitle(`:mag: Top 5 Results for '${search}'`)
                 .setDescription(`${list}\n:arrow_double_down: - Downloads\n:id: - Plugin ID\n`)
                 .setFooter(`Use ${client.config.prefix}plugin [id] for more information on a plugin`)
             list = '';
             sent = true;
-            return message.channel.send({ embed: resultEmbed });
+            return message.reply({embeds: [resultEmbed]});
         }
         request.open("GET", apiURL, true);
         request.send();

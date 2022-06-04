@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 module.exports = { 
     name: "invite",
     description: "The bot invite link!", 
@@ -12,12 +12,12 @@ module.exports = {
     cooldown: 5, 
 
     async execute(client, message, args) {
-        const helpEmbed = new MessageEmbed();
+        const helpEmbed = new EmbedBuilder();
         helpEmbed
             .setURL('https://discord.com/oauth2/authorize?client_id=603751943982153740&scope=bot&permissions=8')
-            .setColor(message.guild.me.displayHexColor)
+            .setColor(message.guild.members.me.displayHexColor)
             .setTitle(`Bot Invite Link`)
             .setDescription(`Click on this link to add this bot to your Discord server!`)
-        message.channel.send({ embed: helpEmbed });
+        message.reply({embeds: [helpEmbed]});
     }
 };

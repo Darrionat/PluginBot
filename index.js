@@ -11,7 +11,14 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
  * Set up ALL THE THINGS
  */
 const client = {
-    bot: new Discord.Client,
+    bot: new Discord.Client({
+      intents: [
+          Discord.IntentsBitField.Flags.Guilds,
+          Discord.IntentsBitField.Flags.GuildMessages,
+          Discord.IntentsBitField.Flags.MessageContent,
+        ],
+      partials: ["MESSAGE", "CHANNEL"]
+    }),
     commands: new Enmap(),
     aliases: new Enmap(),
     cooldowns: new Enmap(),
@@ -29,7 +36,6 @@ const eventFiles = fs.readdirSync("./events").filter(file => file.endsWith(".js"
 
 for (const eventFile of eventFiles) {
     const event = require(`./events/${eventFile}`);
-
     client.bot.on(event.name, (...args) => event.execute(client, ...args));
 }
 

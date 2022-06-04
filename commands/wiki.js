@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 module.exports = { 
     name: "wiki",
     description: "The Wiki link!", 
@@ -12,12 +12,12 @@ module.exports = {
     cooldown: 5, 
 
     async execute(client, message, args) {
-        const helpEmbed = new MessageEmbed();
+        const helpEmbed = new EmbedBuilder();
         helpEmbed
             .setURL('https://wiki.darrionatplugins.com')
-            .setColor(message.guild.me.displayHexColor)
+            .setColor(message.guild.members.me.displayHexColor)
             .setTitle(`Darrionat's Plugins Wiki`)
             .setDescription(`Click on this link to learn all about Darrionat's plugins (bot wiki coming soon!)`)
-        message.channel.send({ embed: helpEmbed });
+        message.reply({embeds: [helpEmbed]});
     }
 };

@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const { Spiget } = require("spiget");
 const spiget = new Spiget("Darrion's Plugin Bot");
 
@@ -18,7 +18,7 @@ module.exports = {
     cooldown: 5,
 
     async execute(client, message, args) {
-        const helpEmbed = new MessageEmbed();
+        const helpEmbed = new EmbedBuilder();
         try {
             var resource = await spiget.getResource(args[0]);
         } catch{
@@ -42,7 +42,7 @@ module.exports = {
 
             helpEmbed
                 .setAuthor(`Author: ${author}`, `${image}`)
-                .setColor(message.guild.me.displayHexColor)
+                .setColor(message.guild.members.me.displayHexColor)
                 .setTitle(`${resource.name}`)
                 .setDescription(`${resource.tag}`)
                 .addFields(
@@ -50,7 +50,7 @@ module.exports = {
                     { name: 'Download', value: `https://spigotmc.org/resources/.${args[0]}/`, inline: true }
                 )
             sent = true;
-            return message.channel.send({ embed: helpEmbed });
+            return message.reply({embeds: [helpEmbed]});
         };
     }
 };

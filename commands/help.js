@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
     name: "help",
@@ -14,15 +14,21 @@ module.exports = {
     cooldown: 0,
 
     async execute(client, message, args) {
-        const helpEmbed = new MessageEmbed();
+        const helpEmbed = new EmbedBuilder();
         if (!args[0]) {
             const commandList = `\`${client.commands.keyArray().join("` `")}\``;
+            const { me } = message.guild.members;
+            const displayName = me.displayName ? me.displayName : client.user.username;
             helpEmbed
-                .setAuthor("Author: Darrion#0001", "https://imgur.com/qxVPF9C.png", "https://wiki.darrionatplugins.com")
-                .setColor(message.guild.me.displayHexColor)
-                .setTitle(`${message.guild.me.displayName} Help`)
+                .setAuthor({
+                  name: "Author: Darrion#0001",
+                  iconURL: "https://imgur.com/qxVPF9C.png",
+                  url: "https://wiki.darrionatplugins.com"
+                })
+                .setColor(me.displayHexColor)
+                .setTitle(`${displayName} Help`)
                 .setDescription(commandList)
-                .setFooter(`Use \`${client.config.prefix}${this.name} ${this.args_usage}\` for more detailed info!`);
+                .setFooter({text: `Use \`${client.config.prefix}${this.name} ${this.args_usage}\` for more detailed info!`});
         } else {
             const requestedCommand = args[0].replace(client.config.prefix, "");
             const command = client.commands.get(requestedCommand) || client.commands.get(client.aliases.get(requestedCommand));
@@ -45,7 +51,6 @@ module.exports = {
 
             helpEmbed.setFooter(`Use \`${client.config.prefix}${this.name}\` to see all my commands!`);
         }
-
-        return message.channel.send({ embed: helpEmbed });
+        return message.reply({embeds: [helpEmbed]});
     }
 };
