@@ -1,17 +1,18 @@
-const fs = require("fs");
-const { Spiget } = require("spiget");
+import { PermissionsBitField } from "discord.js";
+import fs from "fs";
+import { Spiget } from "spiget";
 const spiget = new Spiget("Darrion's Plugin Bot");
 
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-var request = new XMLHttpRequest();
+import { XMLHttpRequest } from "xmlhttprequest";
+const request = new XMLHttpRequest();
 
-module.exports = {
+export default {
     name: "remove",
     description: "Stops the listener for plugin updates",
     aliases: [],
     guild: ["all"],
     nsfw: false,
-    user_permissions: ["ADMINISTRATOR"],
+    user_permissions: [PermissionsBitField.Flags.Administrator],
     bot_permissions: [],
     args_required: 1,
     args_usage: `[resource_id]`,

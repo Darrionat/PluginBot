@@ -1,5 +1,5 @@
-module.exports = {
-    name: "message",
+export default {
+    name: "messageCreate",
 
     async execute(client, message) {
         if (message.author.bot || !message.guild) return;
@@ -49,7 +49,7 @@ module.exports = {
          * Check if the user has the required permissions
          */
         if (command.user_permissions && command.user_permissions.length > 0) {
-            if (!message.member.hasPermission(command.user_permissions)) 
+            if (!message.member.permissions.has(command.user_permissions))
                 return message.reply(`You don't have permission to run that command! \`${command.user_permissions.join("` `")}\``);
         }
                 
@@ -57,7 +57,7 @@ module.exports = {
          * Check if we have the required permissions to complete whatever we wanna do
          */
         if (command.bot_permissions && command.bot_permissions.length > 0) {
-            if (!message.guild.me.hasPermission(command.bot_permissions)) 
+            if (!message.guild.members.me.permissions.has(command.bot_permissions))
                 return message.reply(`I don't have correct permissions to run that command! \`${command.bot_permissions.join("` `")}\``);
         }
 
@@ -65,7 +65,7 @@ module.exports = {
          * Execute the command \o/
          */
         command.execute(client, message, args);
-        client.logger.cmd(`[${message.guild.name}] [#${message.channel.name}] (${message.author.username}) ${message.content}`);
+        client.logger.info(`[cmd] [${message.guild.name}] [#${message.channel.name}] (${message.author.username}) ${message.content}`);
 
         /**
          * Update cooldowns

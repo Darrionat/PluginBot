@@ -1,5 +1,5 @@
-const { MessageEmbed } = require("discord.js");
-module.exports = { 
+import { EmbedBuilder } from "discord.js";
+export default {
     name: "source",
     description: "A link to the bot's GitHub", 
     aliases: [], 
@@ -12,12 +12,12 @@ module.exports = {
     cooldown: 5, 
 
     async execute(client, message, args) {
-        const helpEmbed = new MessageEmbed();
+        const helpEmbed = new EmbedBuilder();
         helpEmbed
             .setURL('https://github.com/Darrionat/PluginBot')
-            .setColor(message.guild.me.displayHexColor)
+            .setColor(message.guild.members.me.displayHexColor)
             .setTitle(`Source Code`)
             .setDescription(`Click on this link to view my source code!`)
-        message.channel.send({ embed: helpEmbed });
+        message.reply({embeds: [helpEmbed]});
     }
 };

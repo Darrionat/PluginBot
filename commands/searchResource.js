@@ -1,10 +1,10 @@
-const { MessageEmbed } = require("discord.js");
-const { Spiget } = require("spiget");
+import { EmbedBuilder } from "discord.js";
+import { Spiget } from "spiget";
 const spiget = new Spiget("Darrion's Plugin Bot");
 
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-var request = new XMLHttpRequest();
-module.exports = {
+import { XMLHttpRequest } from "xmlhttprequest";
+const request = new XMLHttpRequest();
+export default {
     name: "search",
     description: "Searches Spiget's API for a resource, and returns first result",
     aliases: [],
@@ -23,7 +23,7 @@ module.exports = {
         var size = 100;
         var sizeArgIndex = 0;
         var usingSizeFlag = false;
-        for (var arg of args) {
+        for (const arg of args) {
             sizeArgIndex++;
             if (arg !== "-n") continue;
             size = args[sizeArgIndex];
@@ -49,9 +49,9 @@ module.exports = {
             }
 
             // Sort by downloads from a search list of 100 results
-            var map = new Map();
-            for (var resource of results) {
-                let downloads = resource.downloads;
+            const map = new Map();
+            for (const resource of results) {
+                const downloads = resource.downloads;
                 map.set(resource, downloads);
             }
             var topResults = sortMapByValue(map);
@@ -59,14 +59,13 @@ module.exports = {
             // Prepare list for embed
             var index = -1;
             var list = '';
-            for (var [resource, downloads] of topResults) {
+            for (const [resource, downloads] of topResults) {
                 index++;
                 // Return the top 5 results only
                 if (index == 5) break;
-                let id = resource.id;
-                let name = resource.name;
-
-                let info = `**${name}**\n:arrow_double_down:*${downloads}  :id:${id}*\n`;
+                const id = resource.id;
+                const name = resource.name;
+                const info = `**${name}**\n:arrow_double_down:*${downloads}  :id:${id}*\n`;
 
                 // Compile list for the embed
                 if (index == 0) {
@@ -78,18 +77,18 @@ module.exports = {
             }
 
             // Send embed
-            var resultEmbed = new MessageEmbed();
+            const resultEmbed = new EmbedBuilder();
             if (list == undefined || list == '')
                 list = `**No Results Found**`;
 
             resultEmbed
-                .setColor(message.guild.me.displayHexColor)
+                .setColor(message.guild.members.me.displayHexColor)
                 .setTitle(`:mag: Top 5 Results for '${search}'`)
                 .setDescription(`${list}\n:arrow_double_down: - Downloads\n:id: - Plugin ID\n`)
-                .setFooter(`Use ${client.config.prefix}plugin [id] for more information on a plugin`)
+                .setFooter({text: `Use ${client.config.prefix}plugin [id] for more information on a plugin`});
             list = '';
             sent = true;
-            return message.channel.send({ embed: resultEmbed });
+            return message.reply({embeds: [resultEmbed]});
         }
         request.open("GET", apiURL, true);
         request.send();
@@ -100,7 +99,7 @@ module.exports = {
 function concatenateArguments(args) {
     var search = "";
     var index = 0;
-    for (var word of args) {
+    for (const word of args) {
         if (index == 0) {
             search = word;
             index++;

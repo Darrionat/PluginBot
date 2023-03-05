@@ -1,5 +1,5 @@
 #dir which contains the bot directory
-basedir=$PWD
+basedir=$(realpath `dirname "$0"`)
 
 #tmux session name (`basename \"$basedir\"` -> basedir's name)
 session="`basename \"$basedir\"`"
@@ -28,7 +28,7 @@ start() {
 
 stop() {
     echo "Stopping bot..."
-    cd ~/pluginbot
+    cd ~/PluginBot
     echo "Killing tmux session"
     tmux kill-session -t $session
     echo "Bot stopped"

@@ -1,13 +1,13 @@
-const { MessageEmbed } = require("discord.js");
-const fs = require("fs");
+import { EmbedBuilder, PermissionsBitField } from "discord.js";
+import fs from "fs";
 
-module.exports = {
+export default {
     name: "list",
     description: "Lists listeners for plugin updates",
     aliases: [],
     guild: ["all"],
     nsfw: false,
-    user_permissions: ["ADMINISTRATOR"],
+    user_permissions: [PermissionsBitField.Flags.Administrator],
     bot_permissions: [],
     args_required: 0,
     args_usage: ``,
@@ -36,13 +36,13 @@ module.exports = {
             }
             list = `${list}\n${id} <#${watchedResource.channelID}>`;
         }
-        var listEmbed = new MessageEmbed();
+        var listEmbed = new EmbedBuilder();
 
         listEmbed
-            .setColor(message.guild.me.displayHexColor)
+            .setColor(message.guild.members.me.displayHexColor)
             .setTitle(`Watched Resources`)
             .setDescription(`${list}`)
-        return message.channel.send({ embed: listEmbed });
+        return message.reply({embeds: [listEmbed]});
 
     }
 };
