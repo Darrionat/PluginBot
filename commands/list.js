@@ -1,13 +1,13 @@
-const { EmbedBuilder } = require("discord.js");
-const fs = require("fs");
+import { EmbedBuilder, PermissionsBitField } from "discord.js";
+import fs from "fs";
 
-module.exports = {
+export default {
     name: "list",
     description: "Lists listeners for plugin updates",
     aliases: [],
     guild: ["all"],
     nsfw: false,
-    user_permissions: ["ADMINISTRATOR"],
+    user_permissions: [PermissionsBitField.Flags.Administrator],
     bot_permissions: [],
     args_required: 0,
     args_usage: ``,

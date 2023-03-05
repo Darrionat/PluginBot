@@ -1,5 +1,5 @@
-const { EmbedBuilder } = require("discord.js");
-module.exports = { 
+import { EmbedBuilder } from "discord.js";
+export default {
     name: "invite",
     description: "The bot invite link!", 
     aliases: [], 

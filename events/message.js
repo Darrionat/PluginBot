@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     name: "messageCreate",
 
     async execute(client, message) {
@@ -65,7 +65,7 @@ module.exports = {
          * Execute the command \o/
          */
         command.execute(client, message, args);
-        client.logger.cmd(`[${message.guild.name}] [#${message.channel.name}] (${message.author.username}) ${message.content}`);
+        client.logger.info(`[cmd] [${message.guild.name}] [#${message.channel.name}] (${message.author.username}) ${message.content}`);
 
         /**
          * Update cooldowns

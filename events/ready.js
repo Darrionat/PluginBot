@@ -1,14 +1,14 @@
-module.exports = {
+export default {
     name: "ready",
 
     async execute(client) {
-        client.logger.log(`Logged in as ${client.bot.user.tag} on ${client.bot.guilds.cache.size} guilds`);
+        client.logger.info(`Logged in as ${client.bot.user.tag} on ${client.bot.guilds.cache.size} guilds`);
 
         var members = 0;
             client.bot.guilds.cache.forEach(guild => {
             members += guild.memberCount;
         });
-        client.logger.log(`Serving ${members} users in ${client.bot.channels.cache.size} channels`);
+        client.logger.info(`Serving ${members} users in ${client.bot.channels.cache.size} channels`);
 
         client.bot.user.setStatus("available");
 

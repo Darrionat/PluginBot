@@ -1,4 +1,4 @@
-module.exports = { 
+export default {
     name: "ping",
     description: "The bots ping!",
     aliases: ["pingpong"], 

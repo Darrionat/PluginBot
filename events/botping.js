@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     name: "messageCreate",
 
     async execute(client, message) {

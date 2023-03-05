@@ -1,12 +1,16 @@
-const Discord = require("discord.js");
-const { EmbedBuilder } = require("discord.js");
+import Discord from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
-const Enmap = require("enmap");
-const fs = require("fs");
-const { Spiget } = require("spiget");
+import fs from "fs";
+import { Spiget } from "spiget";
 const spiget = new Spiget("Darrion's Plugin Bot");
 
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+import { XMLHttpRequest } from "xmlhttprequest";
+
+import config from "./config.json" assert { type: "json" };
+import logger from "./util/logger.js";
+import packageData from "./package.json" assert { type: "json" };
+
 /**
  * Set up ALL THE THINGS
  */
@@ -19,15 +23,15 @@ const client = {
         ],
       partials: ["MESSAGE", "CHANNEL"]
     }),
-    commands: new Enmap(),
-    aliases: new Enmap(),
-    cooldowns: new Enmap(),
-    config: require("./config.json"),
-    logger: require("./util/logger.js"),
-    package: require("./package.json")
+    commands: new Map(),
+    aliases: new Map(),
+    cooldowns: new Map(),
+    config,
+    logger,
+    packageData,
 };
 
-client.logger.log("Starting up...");
+client.logger.info("Starting up...");
 
 /**
  * Load all ".js" files in ./events and listen for emits
@@ -35,20 +39,20 @@ client.logger.log("Starting up...");
 const eventFiles = fs.readdirSync("./events").filter(file => file.endsWith(".js"));
 
 for (const eventFile of eventFiles) {
-    const event = require(`./events/${eventFile}`);
-    client.bot.on(event.name, (...args) => event.execute(client, ...args).catch(console.error));
+    const event = (await import(`./events/${eventFile}`)).default;
+    client.bot.on(event.name, (...args) => event.execute(client, ...args).catch(logger.error));
 }
 
-client.logger.log(`Loaded ${eventFiles.length} events`);
+client.logger.info(`Loaded ${eventFiles.length} events`);
 
 /**
- * Load all ".js" files in ./commands and add to client.commands Enmap
- * Also check the file for assigned aliases and add to client.aliases Enmap
+ * Load all ".js" files in ./commands and add to client.commands Map
+ * Also check the file for assigned aliases and add to client.aliases Map
  */
 const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
 
 for (const commandFile of commandFiles) {
-    const command = require(`./commands/${commandFile}`);
+    const command = (await import(`./commands/${commandFile}`)).default;
     client.commands.set(command.name, command);
 
     if (command.aliases && command.aliases.length > 0) {
@@ -68,7 +72,7 @@ async function checkUpdates() {
     try {
         var serverDataDir = fs.readdirSync("./serverdata");
     } catch (error) {
-        client.logger.log("No ./serverdata directory", "wrn");
+        client.logger.info("No ./serverdata directory", "warn");
         return;
     }
     const serverFiles = serverDataDir.filter(file => file.endsWith(".json"));
@@ -82,24 +86,36 @@ async function checkUpdates() {
             const id = watchedResource.resourceID;
             const channel = client.bot.channels.cache.get(watchedResource.channelID);
 
-            const resource = await spiget.getResource(id).catch((error) => {
+	    let resource;
+	    try {
+                resource = await spiget.getResource(id);
+	    } catch (e) {
+	        logger.error(e);
                 return;
-            });
+            };
             if (resource == undefined) {
                 continue;
             }
-            const author = (await resource.getAuthor()).name;
+
+            let author;
+            try {
+                author = (await resource.getAuthor()).name;
+	    } catch (e) {
+	        logger.error(e);
+                return;
+            };
+
             let image = resource.icon.fullUrl();
             image = image.replace("orgdata", "org/data");
 
-            latestVersion = await getResourceVersion(id);
+            const latestVersion = await getResourceVersion(id);
 
             // Up to date
             if (watchedResource.lastCheckedVersion == latestVersion) {
                 continue;
             }
 
-            updateDesc = await getUpdateDescription(id);
+            let updateDesc = await getUpdateDescription(id);
             if (updateDesc.length > 1024)
                 updateDesc = `Description greater than 1024 characters`;
             // Send embed
@@ -125,12 +141,12 @@ async function checkUpdates() {
 }
 
 async function getResourceVersion(id) {
-    var idRequest = new XMLHttpRequest();
+    const idRequest = new XMLHttpRequest();
     var latestVersion = null;
 
     idRequest.onreadystatechange = function () {
         const latestVersionData = idRequest.responseText;
-        var dataJSON = JSON.parse(latestVersionData);
+        const dataJSON = JSON.parse(latestVersionData);
         latestVersion = dataJSON.name;
     };
     idRequest.open("GET", `https://api.spiget.org/v2/resources/${id}/versions/latest`, false);
@@ -142,12 +158,12 @@ async function getResourceVersion(id) {
 }
 
 async function getUpdateDescription(id) {
-    var updateRequest = new XMLHttpRequest();
+    const updateRequest = new XMLHttpRequest();
     var updateDesc = null;
 
     updateRequest.onreadystatechange = function () {
         const latestUpdate = updateRequest.responseText;
-        var data = JSON.parse(latestUpdate);
+        const data = JSON.parse(latestUpdate);
         updateDesc = formatText(Buffer.from(data.description, 'base64').toString());
     };
     updateRequest.open("GET", `https://api.spiget.org/v2/resources/${id}/updates/latest`, false);
@@ -174,7 +190,7 @@ function formatText(description) {
     return description;
 }
 
-client.logger.log(`Registered ${commandFiles.length} commands`);
+client.logger.info(`Registered ${commandFiles.length} commands`);
 
-client.logger.log("Logging in...");
+client.logger.info("Logging in...");
 client.bot.login(client.config.token);

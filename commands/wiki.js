@@ -1,5 +1,5 @@
-const { EmbedBuilder } = require("discord.js");
-module.exports = { 
+import { EmbedBuilder } from "discord.js";
+export default {
     name: "wiki",
     description: "The Wiki link!", 
     aliases: [], 

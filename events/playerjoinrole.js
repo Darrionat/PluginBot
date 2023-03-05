@@ -2,7 +2,7 @@
 const guildID = "601497373075570737";
 const memberRoleID = "601576493335969792";
 
-module.exports = {
+export default {
     name: "guildMemberAdd",
 
     async execute(client, member) {

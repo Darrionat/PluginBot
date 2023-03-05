@@ -1,7 +1,7 @@
-const Discord = require("discord.js");
-const { EmbedBuilder } = require("discord.js");
+import Discord from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
-module.exports = {
+export default {
     name: "help",
     description: "All the bot's commands and info on usage!",
     aliases: ["commands", "cmds"],
@@ -16,7 +16,7 @@ module.exports = {
     async execute(client, message, args) {
         const helpEmbed = new EmbedBuilder();
         if (!args[0]) {
-            const commandList = `\`${client.commands.keyArray().join("` `")}\``;
+            const commandList = `\`${Array.from(client.commands.keys()).join("` `")}\``;
             const { me } = message.guild.members;
             const displayName = me.displayName ? me.displayName : client.user.username;
             helpEmbed

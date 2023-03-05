@@ -1,18 +1,22 @@
-const chalk = require("chalk");
-const moment = require("moment");
+import {createLogger, transports, format} from 'winston';
 
-module.exports.log = (content, type = "log") => {
-    const timestamp = `[${moment().format("YYYY-MM-DD HH:mm:ss")}]`;
+const logFormat = format.printf(({level, message, timestamp, stack}) => {
+  return `${timestamp} - ${level} - ${stack || message}`;
+});
 
-    switch (type.toLowerCase()) {
-        case "log": return console.log(`${timestamp} ${chalk.black.bgWhite(type.toUpperCase())} ${content}`);
-        case "err": return console.log(`${timestamp} ${chalk.bgRed(type.toUpperCase())} ${content}`);
-        case "wrn": return console.log(`${timestamp} ${chalk.black.bgYellow(type.toUpperCase())} ${content}`);
-        case "cmd": return console.log(`${timestamp} ${chalk.bgBlue(type.toUpperCase())} ${content}`);
-        default: return this.log(content, "log"); 
-    }
+const logger = createLogger({
+  format: format.combine(
+      format.colorize(),
+      format.timestamp({format: 'YYYY-MM-DD HH:mm:SS'}),
+      format.errors({stack: true}),
+      logFormat,
+  ),
+  transports: [new transports.Console()],
+});
+
+export default {
+  debug: logger.debug.bind(logger),
+  info: logger.info.bind(logger),
+  warn: logger.warn.bind(logger),
+  error: logger.error.bind(logger),
 };
-
-module.exports.cmd = (...args) => this.log(...args, "cmd");
-module.exports.warn = (...args) => this.log(...args, "wrn");
-module.exports.error = (...args) => this.log(...args, "err");

@@ -1,11 +1,11 @@
-const { EmbedBuilder } = require("discord.js");
-const { Spiget } = require("spiget");
+import { EmbedBuilder } from "discord.js";
+import { Spiget } from "spiget";
 const spiget = new Spiget("Darrion's Plugin Bot");
 
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-var request = new XMLHttpRequest();
+import { XMLHttpRequest } from "xmlhttprequest";
+const request = new XMLHttpRequest();
 
-module.exports = {
+export default {
     name: "plugin",
     description: "Gets a plugin by its resource ID and returns details",
     aliases: [],
@@ -20,16 +20,21 @@ module.exports = {
     async execute(client, message, args) {
         const helpEmbed = new EmbedBuilder();
         try {
-            var resource = await spiget.getResource(args[0]);
-        } catch{
-            message.reply(`uh oh ${args[0]} is not a valid resource id!`)
-            return;
+          var resource = await spiget.getResource(args[0]);
+        } catch (e) {
+          client.logger.error(e);
+          message.reply(`uh oh ${args[0]} is not a valid resource id!`)
+          return;
         }
-        var author = (await resource.getAuthor()).name;
+        try {
+          var author = (await resource.getAuthor()).name;
+        } catch (e) {
+          client.logger.error(e);
+          message.reply(`uh oh could not find author for ${args[0]}`);
+          return;
+        }
 
-        var image = resource.icon.fullUrl();
-        image = image.replace("orgdata", "org/data");
-
+        var image = resource.icon.fullUrl().replace("orgdata", "org/data");
         var apiURL = `https://api.spigotmc.org/legacy/update.php?resource=${args[0]}`;
 
         request.open("GET", apiURL, true);

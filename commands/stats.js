@@ -1,6 +1,6 @@
-const { EmbedBuilder } = require("discord.js");
+import { EmbedBuilder } from "discord.js";
 const darrrionID = '163454178365145088';
-module.exports = {
+export default {
     name: "stats",
     description: "Multiple statistics of the bot!",
     aliases: [],
