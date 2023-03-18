@@ -185,7 +185,7 @@ async function getUpdateDescription(id) {
     false
   );
   updateRequest.send();
-  while (latestVersion == null) {}
+  while (updateDesc == null) {}
   return updateDesc;
 }
 
